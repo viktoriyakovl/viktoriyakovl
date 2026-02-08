@@ -24,7 +24,7 @@
  
 ## High-level architecture
 
-<img src="my-portfolio/high-level-architecture/HLA-diagram.png" alt="HLA-diagram" height="600">
+<img src="HLA-diagram.png" alt="HLA-diagram" height="600">
  
 ## Интеграционные потоки
 Детали форматов запроса/ответа см. в спецификации API (_здесь предполагается ссылка_).
