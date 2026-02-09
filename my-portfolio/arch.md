@@ -49,6 +49,7 @@
 | **who_created** | `text` | *(Опц)* ID пользователя админки, загрузившего файл. |
 | **popularity** | `integer` | *(Опц)* Количество запросов (для очистки неиспользуемых). Сбрасывается раз в месяц. |
 
+
 ```mermaid
 classDiagram
     class MediaContentDB {
