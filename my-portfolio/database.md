@@ -21,7 +21,7 @@
 
 ## Схема взаимодействия
 
-<img src="C4-model/C2-container.png" alt="C2-news-container" height="600">
+<img src="notations/C4-model-C2-container.png" alt="C2-news-container" height="600">
 
 ---
 
