@@ -24,7 +24,76 @@
  
 ## High-level architecture
 
-<img src="HLA-diagram.png" alt="HLA-diagram" height="600">
+```mermaid
+%%{init: {'theme': 'base', 'themeVariables': { 
+    'edgeLabelBackground': '#ffffff', 
+    'fontSize': '13px', 
+    'fontFamily': 'Arial',
+    'clusterBkg': '#f4f4f4',
+    'clusterBorder': '#666'
+}}}%%
+
+graph LR
+    %% --- Стили ---
+    classDef box fill:#ffffff,stroke:#000000,stroke-width:2px;
+    classDef cylinder fill:#e1f5fe,stroke:#333,stroke-width:2px;
+    classDef db fill:#ffffff,stroke:#000000,stroke-width:2px,shape:cylinder;
+    classDef queue fill:#e1f5fe,stroke:#333,stroke-width:2px;
+    classDef proxy fill:#fff,stroke:#000000,stroke-width:2px,shape:rhombus;
+    classDef circle stroke:#333,stroke-width:2px;
+
+    %% --- Внешние узлы ---
+    User((User)):::circle
+    SMTP[SMTP Server]:::box
+
+    %% --- Внутренний контур ---
+    subgraph InternalSystem ["Internal System"]
+        direction LR
+        
+        %% Сервисы
+        Frontend[Frontend]:::box
+        BFF{BFF}:::proxy
+        Auth[Auth]:::box
+        users[(users)]:::db
+        Guard[Guard]:::box
+        Notificator[Notificator]:::box
+        Localizator[Localizator]:::box
+        Redis[(Redis)]:::cylinder
+        Kafka{{Kafka}}:::queue
+    end
+
+    %% Стилизация рамки Internal System
+    style InternalSystem fill:#f9f9f9,stroke:#666,stroke-width:2px,stroke-dasharray: 5 5,rx:10,ry:10
+
+    %% --- Связи ---
+    User <--> Frontend
+    Frontend <--> BFF
+    
+    %% Маршрутизация от BFF
+    BFF <-->|1, 9.1, 10| Auth
+    BFF -->|7.1, 16.1| Guard
+    Guard -->|8, 17, 19| BFF
+    
+    %% Взаимодействие Auth и Guard
+    Auth <-->|9.2, 18.2| users
+    Auth -->|2, 11| Guard
+    Guard <-->|18.1| Auth
+    
+    %% Хранилища и очереди
+    Guard -->|3, 12| Redis
+    Guard <-->|7.2, 16.2| Redis
+    Guard -->|4, 13| Kafka
+    
+    %% Уведомления
+    Kafka <--> Notificator
+    Notificator <-->|5, 14| Localizator
+    Notificator -->|6, 15| SMTP
+    
+    SMTP -.->|Email| User
+
+    %% Скругление линий
+    linkStyle default stroke:#333,stroke-width:1px,fill:none;
+```
  
 ## Интеграционные потоки
 Детали форматов запроса/ответа см. в спецификации API (_здесь предполагается ссылка_).
