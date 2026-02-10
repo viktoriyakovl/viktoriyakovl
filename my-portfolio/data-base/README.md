@@ -5,8 +5,6 @@
 Здесь представлены примеры моих работ по базам данных:
 
 - [Описание реляционной базы данных микросервиса](database.md)
-- [SQL-запросы]() - <mark>ДОБАВИТЬ
-- [1С-запросы]() - <mark>ДОБАВИТЬ
 - [Таблицы в Google Sheets](https://docs.google.com/spreadsheets/d/1ie29sUluPLyRfLcOqiGLLiJglrgJ7qWGnKeG157xliE/edit?usp=sharing)
 
 Функциональные требования к базам данных можно посмотреть в спецификации в разделе `pet-project`
