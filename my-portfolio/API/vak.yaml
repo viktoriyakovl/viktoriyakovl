@@ -1,0 +1,589 @@
+openapi: 3.0.3
+info:
+  title:  OpenAPI VAK
+  description: |-
+    Спецификация содержит информацию об API для интеграции с VAK (сервис обработки запросов на доставку аутентификационных сообщений пользователям)
+
+  version: 1.0.
+tags:
+  - name: Notification
+    description: Доставка и статус аутентификационных сообщений
+    externalDocs:
+      description: Use Cases 1
+      url: 
+  - name: Method
+    description: Определение предпочтительного способа доставки сообщений
+    externalDocs:
+      description: Use Cases 3
+      url: 
+  - name: Admin
+    description: Управление системой VAK
+    externalDocs:
+      description: Use Cases 4
+      url: 
+  - name: Callbacks
+    description: Передача статуса в VAK от вендора
+    externalDocs:
+      description: Use Cases 1
+      url: 
+
+
+paths:
+ /api/vak/v1/notification/send:
+    post:
+      tags:
+        - Notification
+      summary: Send notification 
+      description:  Отправить аутентификационное сообщение пользователю 
+      parameters:
+        -  $ref: '#/components/parameters/Auth'
+        -  $ref: '#/components/parameters/TrackingId'
+      requestBody:
+        content: 
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Notification'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response_Notification'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [unauthorized]}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [method_not_allowed]}
+        '409':
+          description: Conflict
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [idempotency_conflict]}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [service_unavailable]}
+            
+ /api/vak/v1/notification/status:
+    get:
+      tags:
+        - Notification
+      summary: Get notification's status
+      description: |
+        Получить статус обработки запроса на доставку сообщения (статус доставки сообщения) по ID или Request_ID.
+        Один из этих параметров - обязательный.
+        Если в запросе указаны и ID, и Request_ID, то Request_ID игнорируется.
+      parameters:
+        - $ref: '#/components/parameters/Auth'
+        - $ref: '#/components/parameters/TrackingId' 
+        - $ref: '#/components/parameters/ID'
+        - $ref: '#/components/parameters/Request_ID'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response_Status'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [invalid_request_body]}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [unauthorized]}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [request_not_found]}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [service_unavailable]}
+        '504':
+          description: Gateway Timeout
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [provider_unavailable]}
+            
+ /api/vak/v1/method:
+    get:
+      tags:
+        - Method
+      summary: Find notification's method 
+      description:  Определить предпочтительный способ доставки аутентификационного сообщения по номеру телефона пользователя 
+      parameters:
+        - $ref: '#/components/parameters/Auth'
+        - $ref: '#/components/parameters/TrackingId'
+        - $ref: '#/components/parameters/Phone'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Response_Find_Method'
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [unknown_delivery_method, invalid_country_code_format]}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [unauthorized]}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [delivery_method_not_determined]}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [service_unavailable]}
+          
+ /api/vak/v1/admin/method:
+    get:
+      tags:
+        - Admin
+      summary: List notification's method 
+      description:  Получить список настроек предпочтительных способов доставки по регионам 
+      parameters:
+        - $ref: '#/components/parameters/Admin'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                type: object
+                properties:
+                  methods:
+                    type: array
+                    items:
+                          $ref: '#/components/schemas/Response_List_Method'
+                example: {methods: [{country_code: "+79", method: flash_call}, {country_code: "+44", method: sms}]}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [unauthorized]}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [service_unavailable]}   
+    post:
+      tags:
+        - Admin
+      summary: Change notification's method 
+      description:  Изменить предпочтительный способ доставки аутентификационного сообщения для региона 
+      parameters:
+        - $ref: '#/components/parameters/Admin'
+      requestBody:
+        content: 
+          application/json:
+            schema: 
+              $ref: '#/components/schemas/Change_Method'
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Response_Change_Method"
+        '400':
+          description: Bad Request
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [invalid_request_body]}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [unauthorized]}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [service_unavailable]}
+
+ /api/vak/v1/callback/{vendor}/{method}:
+    post:
+      tags:
+        - Callbacks
+      summary: Send status 
+      description:  Отправить статус доставки аутентификационного сообщения пользователю (path-параметры vak сам добавляет в url и передает его вендору)
+      parameters:
+        - $ref: '#/components/parameters/Vendor'
+        - $ref: '#/components/parameters/Method'
+      requestBody:
+        content: 
+          application/json:
+            schema: 
+              oneOf:
+                - $ref: '#/components/schemas/Callback_Mail_Post_Flash_Call'
+                - $ref: '#/components/schemas/Callback_Other'
+            
+      responses:
+        '200':
+          description: Success
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [success]}
+        '401':
+          description: Unauthorized
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [unauthorized]}
+        '404':
+          description: Not Found
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [method_not_allowed]}
+        '500':
+          description: Internal Server Error
+          content:
+            application/json:
+              schema:
+                $ref: "#/components/schemas/Error_Response"
+              example: {error_codes: [service_unavailable]}
+
+
+
+
+
+components:
+  parameters:
+    Auth:
+        name: X-AUTH-TOKEN
+        in: header
+        description: Токен аутентификации в системе VAK
+        required: true
+        schema:
+          type: string
+          format: guid
+          example: '02a98125-e6d0-4375-9b4b-2219c9cb73a2'
+    TrackingId:
+        name: X-NP-Tracking-ID
+        in: header
+        description: TrackingId для сквозного трейсинга между системами
+        required: true
+        schema:
+          type: string
+          format: guid
+          example: '02a98125-e6d0-4375-9b4b-2219c9cb73a2'
+    ID:
+      name: id
+      in: query
+      description: Идентификатор запроса на доставку сообщения
+      required: false
+      schema:
+        type: string
+        format: guid
+        example: '550e8400-e29b-41d4-a716-446655440000'
+    Request_ID:
+      name: request_id
+      in: query
+      description: |
+        Идентификатор запроса на стороне сервиса-инициатора. 
+        Если не указан ID, обязательно должен быть указан request_id
+      required: false
+      schema:
+        type: string
+        format: text
+        example: '12344654325678765432'
+    Phone:
+      name: phone_number
+      in: query
+      description: Номер телефона пользователя
+      required: true
+      schema:
+        type: string
+        format: text
+        example: 89102223344
+    Admin:
+        name: X-AUTH-TOKEN
+        in: header
+        description: Идентификатор администратора системы VAK
+        required: true
+        schema:
+          type: string
+          format: guid
+          example: '02a98125-e6d0-4375-9b4b-2219c9cb73a2'
+    Vendor:
+      name: vendor
+      in: path
+      description: Название вендора
+      required: true
+      schema:
+        type: string
+        enum: [mail_post, other]
+    Method:
+      name: method
+      in: path
+      description: Способ доставки сообщения
+      required: true
+      schema:
+        type: string
+        enum: [flash_call]
+
+  schemas:
+  
+    Notification:
+      type: object
+      description: Request Body
+      required:
+        - phone_number
+      properties:
+        phone_number:
+          description: Номер телефона пользователя
+          type: string
+          format: text
+          nullable: false
+          example: 89102223344
+        request_id:
+          description: Идентификатор запроса на стороне сервиса-инициатора
+          type: string
+          format: text
+          nullable: true
+          example: "12344654325678765432"
+    Response_Notification:
+      type: object
+      description: Response
+      properties:
+        id:
+          description: Идентификатор запроса на доставку сообщения
+          type: string
+          format: guid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        method:
+          description: Способ доставки сообщения
+          type: string
+          enum: [flash_call, sms]
+  
+    Response_Status:
+      type: object
+      description: Response
+      properties:
+        id:
+          description: Идентификатор запроса на доставку сообщения
+          type: string
+          format: guid
+          example: "550e8400-e29b-41d4-a716-446655440000"
+        code:
+          description: Аутентификационный код, отправленный пользователю
+          type: integer
+          format: int8
+          example: "2424"
+        status:
+          description: Статус доставки сообщения
+          type: string
+          enum: [Received, Error, Sent to vendor, Vendor's Error, In progress, Delivered, Not delivered]
+          example: Delivered
+        method:
+          description: Способ доставки сообщения
+          type: string
+          enum: [flash_call, sms]
+
+    Response_Find_Method:
+      type: object
+      properties:
+        method:
+          description: Способ доставки сообщения
+          type: string
+          enum: [flash_call, sms]
+  
+    Change_Method:
+      type: object
+      description: Request Body
+      required:
+        - country_code
+        - method
+      properties:
+        country_code:
+          description: Код региона
+          type: string
+          format: text
+          nullable: false
+          example: "89"
+        method:
+          description: Способ доставки сообщения
+          type: string
+          enum: [flash_call, sms]
+          nullable: false
+    Response_Change_Method:
+      type: object
+      properties:
+        country_code:
+          description: Код региона
+          type: string
+          format: text
+          example: "+79"
+        method_old:
+          description: Старый способ доставки сообщения
+          type: string
+          enum: [sms, flash_call, null]
+          example: null
+        method_new:
+          description: Новый способ доставки сообщения
+          type: string
+          enum: [flash_call, sms, null]
+          example: sms
+          
+    Response_List_Method:
+      type: object
+      properties:
+        country_code:
+          description: Код региона
+          type: string
+          format: text
+          example: "+79"
+        method:
+          description: Новый способ доставки сообщения
+          type: string
+          enum: [flash_call, sms]
+          example: sms
+    
+    Callback_Mail_Post_Flash_Call:
+      type: object
+      description: Request Body
+      properties:
+        id:
+          description: Идентификатор фактически оказанной услуги
+          type: string
+          format: text
+          nullable: false
+          example: 12313212380892930409
+        user_id:
+          description: Пользовательский идентификатор
+          type: integer
+          format: int8
+          nullable: false
+          example: 0
+        status:
+          description: Значение итогового статуса
+          type: string
+          enum: [NO ANSWER, ANSWERED, BUSY]
+          example: ANSWERED
+        phone:
+          description: Номер телефона, на который осуществлялась отправка
+          type: string
+          format: text
+          nullable: false
+          example: 79999999999
+        time_change_state:
+          description: Дата и время последнего изменения статуса оказания услуги (в формате ISO 8601)
+          type: string
+          format: date-time
+          nullable: false
+          example: 2022-06-04 11:03:00
+        type:
+          description: Тип итоговой услуги
+          type: string
+          enum: [flash_call, sms]
+          example: flash_call
+    
+    Callback_Other:
+      type: object
+      additionalProperties: true # Позволяет любые свойства
+  
+    Error_Response:
+      type: object
+      required:
+        - error_codes
+      properties:
+        error_codes:
+          type: array
+          items:
+            $ref: '#/components/schemas/Error_Code'
+          description: |
+            Массив машиночитаемых идентификаторов найденных ошибок.
+            Может содержать один или несколько кодов одновременно.
+          example:
+            - invalid_phone_format
+            - invalid_message_text
+      additionalProperties: false
+    
+    Error_Code:
+      type: string
+      enum:
+        - method_not_allowed
+        - invalid_request_body
+        - invalid_phone_format
+        - invalid_message_text
+        - provider_unavailable
+        - service_unavailable
+        - delivery_method_not_determined
+        - request_not_found
+        - invalid_country_code_format
+        - unknown_delivery_method
+        - unauthorized
+      description: Машиночитаемый идентификатор ошибки.
+      example: invalid_phone_format
+  
+  
+  
+  
