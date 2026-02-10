@@ -1,4 +1,4 @@
-# Описание микросервиса новостей
+# Микросервис новостей
 
 ## Общая информация
 
@@ -16,12 +16,6 @@
 **Consumer:**
 *   Kafka _topic Name1_
 *   Kafka _topic Name2_
-
----
-
-## Схема взаимодействия
-
-<img src="notations/C4-model-C2-container.png" alt="C2-news-container" height="600">
 
 ---
 
