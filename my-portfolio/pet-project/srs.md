@@ -488,3 +488,4 @@ sequenceDiagram
 | ИТ-6 | Добавить или изменить предпочтительный способ доставки в регионе | Администратор системы | REST API over HTTPS | `/api/vak/v1/admin/metod` | POST | VAK |
 | - | Полученить текущие предпочтительные способы доставки во всех регионах | Администратор системы | REST API over HTTPS | `/api/vak/v1/admin/metod` | GET | VAK |
 
+Спецификаци API разработана в формате [yaml](api.yaml)  
