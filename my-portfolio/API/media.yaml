@@ -1,0 +1,293 @@
+openapi: 3.0.13
+info:
+  title: 'MediaContent API'
+  description: 'Описание API микросервиса MediaContent, который загружает медиафайлы в хранилище S3 и содержит путь до этих медиафайлов'
+  version: '1.0'
+
+security:
+  - Bearer: []
+
+servers:
+  - url: https://preprod.base.online/api
+    description: PREPROD
+
+paths:
+  /mediacontent/save:
+    post:
+      tags:
+        - Запись
+      summary: 'Загрузить медиафайл'
+      description: 'Загружает изображение на CDN. При загрузке изображения вместе с ним передается ID (не соответствующий контенту, к которому прикрепляется медиафайл)'
+      requestBody:
+        content:
+          multipart/form-data:
+            schema:
+              type: object
+              required: [data, id, serviceId, group]
+              properties:
+                data:
+                  type: string
+                  format: binary
+                  description: 'Загружаемый медиафайл. Вместе с ним передаются название, MIME-тип и прочая информация'
+                id:
+                  type: string
+                  format: uuid
+                  description: 'Идентификатор медиафайла'
+                  example: 02a98125-e6d0-4375-9b4b-2219c9cb73a2
+                serviceId:
+                  type: string
+                  description: 'Идентификатор проекта'
+                  enum: [rq, mk]
+                type:
+                  type: string
+                  description: 'Человекочитаемый идентификатор медиа, отражающий область применения изображения'
+                  enum: [bacground, cover, logo, preview]
+                  nullable: true
+                group:
+                  type: string
+                  description: 'Человекочитаемый идентификатор медиа, отражающий где используется изображение'
+                  enum: [news, products, project, contentforge]
+      responses:
+        '200':
+          $ref: '#/components/responses/SuccessAll'
+        '400':
+          description: 'Bad Request'
+        '500':
+          description: 'Internal Server Error'
+
+  /mediacontent:
+    post: 
+      tags: 
+        - Получение
+      summary: 'Получить ссылки на медиафайлы по массиву id'
+      description: 'Возвращает относительные ссылки на CDN для запрошенных медиафайлов'
+      requestBody: 
+        required: true
+        content: 
+          application/json:
+            schema: 
+              type: object
+              properties:
+                ids:
+                  type: array
+                  items: 
+                    type: string
+                    format: uuid
+                    nullable: false
+                    example: 02a98125-e6d0-4375-9b4b-2219c9cb73a2
+                    description: 'Идентификатор медиафайла'
+                  example: [02a98125-e6d0-4375-9b4b-2219c9cb73a2, 340e6e40-d340-46ec-8e55-f225b5dfd40a]
+      responses:
+        '200':        
+          $ref: '#/components/responses/SuccessArray'
+        '400':
+          description: 'Bad Request'
+        '404':
+          $ref: "#/components/responses/404Error"
+        '500':
+          description: 'Internal Server Error'
+
+  /mediacontent/{serviceId}/group/{group}:
+    get:
+      tags:
+        - Получение
+      summary: 'Получить ссылки на медиафайлы по сервису и группе'
+      description: 'Возвращает массив относительных ссылок на CDN указанного сервиса и группы. Необходим для того, чтобы можно было переиспользовать уже загруженные изображения (например, при создании нового товара или новости)'
+      parameters: 
+        - name: serviceId
+          in: path
+          required: true
+          description: 'Идентификатор проекта'
+          schema: 
+            type: string
+            enum: [rq, mk]
+        - name: group
+          in: path
+          required: true
+          description: 'Человекочитаемый идентификатор медиа, отражающий где используется изображение'
+          schema: 
+            type: string
+            enum: [news, products, project, contentforge]
+        - name: type
+          in: query
+          required: false
+          description: 'Человекочитаемый идентификатор медиа, отражающий область применения изображения'
+          schema: 
+            type: string
+            enum: [bacground, cover, logo, preview]
+      responses:
+        '200':       
+          $ref: '#/components/responses/SuccessArray'
+        '400':
+          description: 'Bad Request'
+        '404':
+          $ref: "#/components/responses/404Error"
+        '500':
+          description: 'Internal Server Error'        
+
+  /mediacontent/{id}:          
+    delete: 
+      tags: 
+        -  Удаление
+      summary: 'Удалить медиафайл'
+      description: 'Полученный id медиафайла валидируется на Backend: 1. Определение group данного id - определяет микросервис, который может использовать этот медиафайл. 2. Запрос в определенный по group микросервис для поиска указанного id в колонке images (jsonb). 3. Фильтрация полученного списка контента по признаку is_deleted (ищем только не удаленный контент). 3.1. если нет контента - удаляется медиафайл из БД MediaContent и CDN. 3.2. если есть контент - возвращается 409 ошибка со списком id найденного контента'
+      parameters: 
+        - name: id
+          in: path
+          description: 'Идентификатор медиафайла'
+          required: true
+          schema:
+            type: string
+            format: uuid
+            example: 02a98125-e6d0-4375-9b4b-2219c9cb73a2
+      responses: 
+        '200':
+          description: 'Success'          
+        '404':
+          $ref: "#/components/responses/404Error"
+        '409':
+          $ref: "#/components/responses/409Error"
+        '500':
+          description: 'Internal Server Error'     
+
+components: 
+  securitySchemes:
+    Bearer:
+      type: http
+      description: 'Введите JWT с префиксом Bearer (например, ''Bearer {token}'')'
+      scheme: Bearer
+
+  responses:
+    Success:
+      description: 'Success'
+      content:
+        aplication/json:
+          schema:
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: 'Идентификатор медиафайла'
+                example: 02a98125-e6d0-4375-9b4b-2219c9cb73a2
+              url:
+                type: string
+                description: 'Относительный путь к файлу на CDN'
+                example: rq/project/02a98125-e6d0-4375-9b4b-2219c9cb73a2.jpg
+    SuccessArray:
+      description: 'Success'
+      content:
+        aplication/json:
+          schema:
+            type: array
+            items:
+              type: object
+              properties:
+                id:
+                  type: string
+                  format: uuid
+                  description: 'Идентификатор медиафайла'
+                  example: 02a98125-e6d0-4375-9b4b-2219c9cb73a2
+                name:
+                  type: string
+                  description: 'Название загруженного файла'
+                  nullable: true
+                  example: 'Реалы_250(3)'
+                url:
+                  type: string
+                  description: 'Относительный путь к файлу на CDN'
+                  example: rq/project/f02dac83-be9a-4cfc-815b-28604661ef94.jpg
+            example: [{id: 02a98125-e6d0-4375-9b4b-2219c9cb73a2, name: 'Фон(4)', url: rq/project/02a98125-e6d0-4375-9b4b-2219c9cb73a2.jpg}, {id: 340e6e40-d340-46ec-8e55-f225b5dfd40a, name: '', url: rq/news/340e6e40-d340-46ec-8e55-f225b5dfd40a.mp4}]
+    SuccessAll:
+      description: 'Success'
+      content:
+        application/json:
+          schema: 
+            type: object
+            properties:
+              id:
+                type: string
+                format: uuid
+                description: 'Идентификатор медиафайла'
+                example: 02a98125-e6d0-4375-9b4b-2219c9cb73a2
+              serviceId:
+                type: string
+                description: 'Идентификатор проекта'
+                enum: [rq, mk]
+                example: rq
+              type:
+                type: string
+                description: 'Человекочитаемый идентификатор медиа, отражающий область применения изображения'
+                nullable: true
+                enum: [bacground, cover, logo, preview]
+                example: preview
+              group:
+                type: string
+                description: 'Человекочитаемый идентификатор медиа, отражающий где используется изображение'
+                enum: [news, products, project, contentforge]
+                example: products
+              url:
+                type: string
+                description: 'Относительный путь к файлу на CDN'
+                example: rq/project/02a98125-e6d0-4375-9b4b-2219c9cb73a2.jpg
+              name:
+                type: string
+                description: 'Название загруженного файла'
+                nullable: true
+                example: 'Реалы_250(3)'
+              metadata:
+                type: object
+                description: 'Дополнительные данные, такие как размер файла, MIME-тип, разрешение'
+                nullable: true
+                properties:
+                  size:
+                    type: string
+                    description: 'Вес файла'
+                    example: '100 KB'
+                  mimeType:
+                    type: string
+                    enum: [image/jpeg, image/png, image/webp, image/avif, video/mp4, video/webm]
+                    example: image/webp
+                  px:
+                    type: string
+                    description: 'Размер (пропорции) видео/изображения'
+                    example: '500x500'
+              when_created:
+                type: string
+                format: timestamp
+                description: 'Дата и время загрузки медиафайла в админке'
+                example: '2024-10-15 09:44:14'
+              created_by:
+                type: string
+                description: 'Идентификатор пользователя админки, который загрузил медиафайл'
+                example: 1222a40f-a8eb-4272-81e9-a3fa7c5603ba
+    404Error:
+      description: 'Not Found'
+      content:
+        application/json:
+          schema: 
+            type: object
+            properties:
+              description:
+                type: string
+                description: 'Описание ошибки'
+                enum: ['Content with {id} not found', 'Content with {serviceId} and {group} not found']
+              code:
+                type: string
+                description: 'Статус-код ошибки'
+                default: 404
+    409Error:
+      description: 'Conflict'
+      content: 
+        application/json:
+          schema: 
+            type: object
+            properties:
+              description:
+                type: string
+                description: 'Описание ошибки'
+                example: 'Media cannot be deleted because it is used by {group} content with IDs: {id}'
+              code:
+                type: string
+                description: 'Статус-код ошибки'
+                default: 409
