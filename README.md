@@ -42,25 +42,22 @@
 
 | Навык | Дополнительная информация | Инструменты | Уровень | 
 |  :---  |  :---  |  :---  | :---  |
-|  **Бизнес-анализ** |
+|  <mark>**Бизнес-анализ** |
 | Бизнес-анализ  | • Интервьюирование,<br>• Определение бизнес-рисков,<br>• Формирование состава проекта,<br>• Формулирование бизнес-требований,<br>• Сопровождение проектов до их реализации | • User Story,<br>• Context Diagram | **$\color{green}{\text{Senior}}$** |
 | Описание бизнес-процессов | •  Нотации BPMN,<br>• Дизайн-системы | • Draw.io, Miro,<br>• Figma | **$\color{green}{\text{Senior}}$** |
 | Продуктовые исследования | • Разработка концеп-макетов,<br>• Проверка гипотез,<br>• Проведение UX-исследований |  | **$\color{blue}{\text{Middle+}}$** |
-| **Системный анализ** |
+| <mark>**Системный анализ** |
 | Системный анализ  | • Функциональные требования,<br>• Нефункциональные требовани,<br>• Требования к UI,<br>• Интеграционные требования,<br>• Сопровождение проектов до их реализации  | • Use Cases,<br>• Sequence-диаграммы  | **$\color{green}{\text{Senior}}$** |
-| |
 | API | • Разработка контрактов,<br>• Формирование спецификаций API,<br>• Тестирование API | • Swagger,<br>• Postman | **$\color{green}{\text{Senior}}$** | 
 | Формат рабочих файлов (код) | md, yaml, json |   |  **$\color{green}{\text{Senior}}$** |
-| |
 | Опыт работы с БД | PostgreSQL | • pgAdmin,<br>• DataGrip | **$\color{green}{\text{Senior}}$** | 
 | Проектирование распределенных баз данных | • ER-диаграммы | • Draw.io, Mermaid | **$\color{green}{\text{Senior}}$** | 
 | Язык формул | Power Query M | • MS Excel<br>• Google Sheets | **$\color{green}{\text{Senior}}$** | 
 | Язык запросов | •  SQL,<br>• 1С | • pgAdmin,<br>• DataGrip | **$\color{blue}{\text{Middle+}}$** | 
-| |
 | Описание архитектуры в нотациях |  • C4,<br>• UML,<br>• BPMN | • Draw.io,<br>• PlantUML,<br>• Mermaid  |  **$\color{green}{\text{Senior}}$** |
 | Работа в Git  | • Bitbucket,<br>• GitHub  |  • VS Code |  **$\color{blue}{\text{Middle+}}$** |
 | Языки программирования  |  • C#, Python,<br>• TypeScript, React,<br>• 1C,<br>• Pascal, Fortran |   |  **$\color{orange}{\text{Junior}}$** |
-| **Организация работы** |
+| <mark>**Организация работы** |
 | Описание документации  |  Продуктовая, техническая, пользовательская документация любой сложности |  • Confluence,<br>• Git,<br>• Notion | **$\color{green}{\text{Senior}}$** |
 | Time-трекинг  | Автоматизация Jira, синхранизации с Confluence  | • Jira,<br>• Asana | **$\color{green}{\text{Senior}}$** |
 
