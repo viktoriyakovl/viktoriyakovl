@@ -16,7 +16,7 @@
 
 **Примеры моих работ:** 
 - [Бизнес-анализ - Vision & Scope](my-portfolio/pet-project/vision-and-scope.md)
-- [Системный анализ - Software Requirements Specification](my-portfolio/pet-project/__________________________________.md)
+- [Системный анализ - Software Requirements Specification](my-portfolio/pet-project/srs.md)
 - [Specification API](my-portfolio/API)
 - [Описание DataBase](my-portfolio/data-base)
 - [Описание микросервисной архитектуры](my-portfolio/arch-doc)
