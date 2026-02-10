@@ -9,7 +9,7 @@
 - [1С-запросы]()
 - [Таблицы в Google Sheets](https://docs.google.com/spreadsheets/d/1ie29sUluPLyRfLcOqiGLLiJglrgJ7qWGnKeG157xliE/edit?usp=sharing)
 
-Функциональные требования к базам данных можно посмотреть в спецификации [pet-project](pet-project)
+Функциональные требования к базам данных можно посмотреть в спецификации в разделе `pet-project`
 
 ---
 
