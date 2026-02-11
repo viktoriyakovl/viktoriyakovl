@@ -2,7 +2,7 @@
 
 ### Обо мне
 
-Меня зовут Виктория Ковалева, и в настоящий момент я являюсь **<mark>System Analyst</mark> (`Middle+`)** и **<mark>Technical Writer</mark> (`Senior`)** в компании **Lesta Games**
+Меня зовут Виктория Ковалева, и в настоящий момент я являюсь **<mark>System Analyst</mark>** и **<mark>Technical Writer</mark>** в компании **Lesta Games**
 
 - Провожу fullstack-анализ проектов:
   - от интервьюирования бизнес-заказчика
