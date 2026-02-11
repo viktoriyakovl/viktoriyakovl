@@ -7,8 +7,8 @@
 - [Архитектурное предложение](arch-proposal.md)
 - [Описание высокоуровневой архитектуры](high-level-architecture.md)
 
-Функциональные, нефункциональные, интеграционные требования можно посмотреть в разделе `pet-project`
-<BR>Примеры API спецификации - в разделе `API`
+Функциональные, нефункциональные, интеграционные требования можно посмотреть в разделе [`pet-project`](https://github.com/viktoriyakovl/viktoriyakovl/tree/main/my-portfolio/pet-project)
+<BR>Примеры API спецификации - в разделе [`API`](https://github.com/viktoriyakovl/viktoriyakovl/tree/main/my-portfolio/API)
 
 ---
 
