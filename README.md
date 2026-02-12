@@ -59,7 +59,7 @@
 | Язык запросов | •  SQL,<br>• 1С | • pgAdmin,<br>• DataGrip | **$\color{blue}{\text{Middle+}}$** | 
 | Описание архитектуры в нотациях |  • C4,<br>• UML,<br>• BPMN | • Draw.io,<br>• PlantUML,<br>• Mermaid  |  **$\color{green}{\text{Senior}}$** |
 | Работа в Git  | • Bitbucket,<br>• GitHub  |  • VS Code |  **$\color{blue}{\text{Middle+}}$** |
-| Языки программирования  |  • C#, Python,<br>• React,<br>• 1C,<br>• Pascal, Fortran |   |  **$\color{orange}{\text{Junior}}$** |
+| Языки программирования  |  • C#, Python,<br>• TypeScript, React,<br>• 1C,<br>• Pascal, Fortran |   |  **$\color{orange}{\text{Junior}}$** |
 | <mark>**Организация работы** |
 | Описание документации  |  Продуктовая, техническая, пользовательская документация любой сложности |  • Confluence,<br>• Git,<br>• Notion | **$\color{green}{\text{Senior}}$** |
 | Time-трекинг  | Автоматизация Jira, синхранизации с Confluence  | • Jira,<br>• Asana | **$\color{green}{\text{Senior}}$** |
